@@ -214,6 +214,31 @@ func (fl *FunctionLiteral) String() string {
 	return out.String()
 }
 
+type CallExpression struct {
+	Token     token.Token // the '(' token
+	Function  Expression  // identifier or function literal
+	Arguments []Expression
+}
+
+func (ce *CallExpression) expressionNode()      {}
+func (ce *CallExpression) TokenLiteral() string { return ce.Token.Literal }
+func (ce *CallExpression) String() string {
+	var out bytes.Buffer
+
+	out.WriteString(ce.Function.String())
+	out.WriteString("(")
+	if len(ce.Arguments) > 0 {
+		last := len(ce.Arguments) - 1
+		for i := 0; i < last; i++ {
+			out.WriteString(ce.Arguments[i].String() + ", ")
+		}
+		out.WriteString(ce.Arguments[last].String())
+	}
+	out.WriteString(")")
+
+	return out.String()
+}
+
 type Program struct {
 	Statements []Statement
 }
