@@ -188,6 +188,32 @@ func (bs *BlockStatement) String() string {
 	return out.String()
 }
 
+type FunctionLiteral struct {
+	Token      token.Token // the 'fn' token
+	Parameters []*Identifier
+	Body       *BlockStatement
+}
+
+func (fl *FunctionLiteral) expressionNode()      {}
+func (fl *FunctionLiteral) TokenLiteral() string { return fl.Token.Literal }
+func (fl *FunctionLiteral) String() string {
+	var out bytes.Buffer
+
+	out.WriteString(fl.TokenLiteral())
+	out.WriteString("(")
+	if len(fl.Parameters) > 0 {
+		last := len(fl.Parameters) - 1
+		for i := 0; i < last; i++ {
+			out.WriteString(fl.Parameters[i].String() + ", ")
+		}
+		out.WriteString(fl.Parameters[last].String())
+	}
+	out.WriteString(") ")
+	out.WriteString(fl.Body.String())
+
+	return out.String()
+}
+
 type Program struct {
 	Statements []Statement
 }
