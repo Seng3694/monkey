@@ -131,9 +131,12 @@ func (lexer *Lexer) readChar() {
 
 func (lexer *Lexer) readIdentifier() string {
 	position := lexer.position
-	for isLetter(lexer.char) {
-		lexer.readChar()
+	if isLetter(lexer.char) {
+		for isLetter(lexer.char) || isDigit(lexer.char) {
+			lexer.readChar()
+		}
 	}
+
 	return lexer.input[position:lexer.position]
 }
 
