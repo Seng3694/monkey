@@ -77,6 +77,24 @@ func TestReturnStatements(t *testing.T) {
 	}
 }
 
+func TestStringLiteralExpressions(t *testing.T) {
+	input := `"Hello World";`
+	lexer := lexer.New(input)
+	parser := New(lexer)
+	program := parser.ParseProgram()
+	checkParserErrors(t, parser)
+
+	stmt := program.Statements[0].(*ast.ExpressionStatement)
+	literal, ok := stmt.Expression.(*ast.StringLiteral)
+	if !ok {
+		t.Fatalf("stmt.Expression not *ast.StringLiteral. got=%T", stmt.Expression)
+	}
+
+	if literal.Value != "Hello World" {
+		t.Errorf("literal.Value not %q. got=%q", "hello world", literal.Value)
+	}
+}
+
 func testLetStatement(t *testing.T, stmt ast.Statement, name string) bool {
 	if stmt.TokenLiteral() != "let" {
 		t.Errorf("s.TokenLiteral not 'let'. got=%q", stmt.TokenLiteral())
