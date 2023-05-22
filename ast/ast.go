@@ -248,6 +248,29 @@ func (s *StringLiteral) expressionNode()      {}
 func (s *StringLiteral) TokenLiteral() string { return s.Token.Literal }
 func (s *StringLiteral) String() string       { return s.Token.Literal }
 
+type ArrayLiteral struct {
+	Token    token.Token // the '[' token
+	Elements []Expression
+}
+
+func (al *ArrayLiteral) expressionNode()      {}
+func (al *ArrayLiteral) TokenLiteral() string { return al.Token.Literal }
+func (al *ArrayLiteral) String() string {
+	var out bytes.Buffer
+
+	out.WriteString("[")
+	if len(al.Elements) > 0 {
+		last := len(al.Elements) - 1
+		for i := 0; i < last; i++ {
+			out.WriteString(al.Elements[i].String() + ", ")
+		}
+		out.WriteString(al.Elements[last].String())
+	}
+	out.WriteString("]")
+
+	return out.String()
+}
+
 type Program struct {
 	Statements []Statement
 }
