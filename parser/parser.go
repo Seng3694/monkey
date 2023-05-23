@@ -33,6 +33,7 @@ const (
 	PRODUCT     // *
 	PREFIX      // -X or !X
 	CALL        // myFunction(X)
+	INDEX       // array[index]
 )
 
 var precedences = map[token.TokenType]int{
@@ -47,6 +48,7 @@ var precedences = map[token.TokenType]int{
 	token.SLASH:    PRODUCT,
 	token.ASTERISK: PRODUCT,
 	token.LPAREN:   CALL,
+	token.LBRACKET: INDEX,
 }
 
 func (parser *Parser) peekPrecendence() int {
@@ -104,6 +106,7 @@ func New(lexer *lexer.Lexer) *Parser {
 	parser.registerInfix(token.GT, parser.parseInfixExpression)
 	parser.registerInfix(token.LT, parser.parseInfixExpression)
 	parser.registerInfix(token.LPAREN, parser.parseCallExpression)
+	parser.registerInfix(token.LBRACKET, parser.parseIndexExpression)
 
 	return parser
 }
@@ -341,6 +344,19 @@ func (parser *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 func (parser *Parser) parseCallExpression(function ast.Expression) ast.Expression {
 	expr := &ast.CallExpression{Token: parser.currentToken, Function: function}
 	expr.Arguments = parser.parseExpressionList(token.RPAREN)
+	return expr
+}
+
+func (parser *Parser) parseIndexExpression(left ast.Expression) ast.Expression {
+	expr := &ast.IndexExpression{Token: parser.currentToken, Left: left}
+
+	parser.nextToken()
+	expr.Index = parser.parseExpression(LOWEST)
+
+	if !parser.expectPeek(token.RBRACKET) {
+		return nil
+	}
+
 	return expr
 }
 
