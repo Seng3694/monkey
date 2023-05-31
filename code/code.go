@@ -99,11 +99,15 @@ func ReadOperands(def *Definition, instr Instructions) ([]int, int) {
 	for i, width := range def.OperandWidths {
 		switch width {
 		case 2:
-			operands[i] = int(binary.BigEndian.Uint16(instr[offset:]))
+			operands[i] = int(ReadUint16(instr[offset:]))
 		}
 
 		offset += width
 	}
 
 	return operands, offset
+}
+
+func ReadUint16(instr Instructions) uint16 {
+	return binary.BigEndian.Uint16(instr)
 }
