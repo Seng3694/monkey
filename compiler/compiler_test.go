@@ -16,7 +16,7 @@ type compilerTestCase struct {
 	expectedInstructions []code.Instructions
 }
 
-func TestCompilerTests(t *testing.T) {
+func TestIntegerArithmetic(t *testing.T) {
 	tests := []compilerTestCase{
 		{
 			input:             "1 + 2",
@@ -24,6 +24,7 @@ func TestCompilerTests(t *testing.T) {
 			expectedInstructions: []code.Instructions{
 				code.Make(code.OpConstant, 0),
 				code.Make(code.OpConstant, 1),
+				code.Make(code.OpAdd),
 			},
 		},
 	}
