@@ -7,7 +7,10 @@ import (
 	"monkey/object"
 )
 
-const StackSize = 2048
+const (
+	StackSize  = 2048
+	GlobalSize = 65536
+)
 
 var (
 	True  = &object.Boolean{Value: true}
@@ -21,6 +24,8 @@ type VM struct {
 
 	stack []object.Object
 	sp    int // Always points to the next value. Top of stack is stack[sp-1]
+
+	globals []object.Object
 }
 
 func New(bytecode *compiler.ByteCode) *VM {
@@ -30,7 +35,15 @@ func New(bytecode *compiler.ByteCode) *VM {
 
 		stack: make([]object.Object, StackSize),
 		sp:    0,
+
+		globals: make([]object.Object, GlobalSize),
 	}
+}
+
+func NewWithGlobalsStore(bytecode *compiler.ByteCode, s []object.Object) *VM {
+	vm := New(bytecode)
+	vm.globals = s
+	return vm
 }
 
 func (vm *VM) LastPoppedStackElement() object.Object {
@@ -95,6 +108,21 @@ func (vm *VM) Run() error {
 			if !isTruthy(condition) {
 				ip = pos - 1
 			}
+		case code.OpGetGlobal:
+			globalIndex := code.ReadUint16(vm.instructions[ip+1:])
+			ip += 2
+
+			err := vm.push(vm.globals[globalIndex])
+			if err != nil {
+				return err
+			}
+
+		case code.OpSetGlobal:
+			globalIndex := code.ReadUint16(vm.instructions[ip+1:])
+			ip += 2
+
+			vm.globals[globalIndex] = vm.pop()
+
 		case code.OpPop:
 			vm.pop()
 		}
