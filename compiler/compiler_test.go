@@ -410,7 +410,7 @@ func TestIndexExpressions(t *testing.T) {
 func TestFunctions(t *testing.T) {
 	tests := []compilerTestCase{
 		{
-			input: "fn() { return 5 + 10 };", // semicolon required. TODO: fix lexer
+			input: "fn() { return 5 + 10 }",
 			expectedConstants: []any{
 				5,
 				10,
