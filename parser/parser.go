@@ -121,7 +121,7 @@ func (parser *Parser) ParseProgram() *ast.Program {
 	program := &ast.Program{}
 	program.Statements = []ast.Statement{}
 
-	for parser.currentToken.Type != token.EOF {
+	for !parser.currentTokenIs(token.EOF) {
 		stmt := parser.parseStatement()
 		if stmt != nil {
 			program.Statements = append(program.Statements, stmt)
@@ -176,7 +176,7 @@ func (parser *Parser) parseReturnStatement() *ast.ReturnStatement {
 
 	stmt.ReturnValue = parser.parseExpression(LOWEST)
 
-	for !parser.currentTokenIs(token.SEMICOLON) {
+	if parser.peekTokenIs(token.SEMICOLON) {
 		parser.nextToken()
 	}
 
