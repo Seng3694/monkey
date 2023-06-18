@@ -187,6 +187,20 @@ func TestFunctionsWithReturnStatement(t *testing.T) {
 	runVmTests(t, tests)
 }
 
+func TestFunctionsWithoutReturnStatement(t *testing.T) {
+	tests := []vmTestCase{
+		{
+			input:    "let a=fn(){};a();",
+			expected: Null,
+		},
+		{
+			input:    "let a=fn(){};let b=fn(){a();};a();b();",
+			expected: Null,
+		},
+	}
+	runVmTests(t, tests)
+}
+
 func runVmTests(t *testing.T, tests []vmTestCase) {
 	t.Helper()
 
