@@ -38,7 +38,7 @@ func TestDefine(t *testing.T) {
 
 	secondLocal := NewEnclosedSymbolTable(global)
 
-	e := secondLocal.Define("c")
+	e := secondLocal.Define("e")
 	if e != expected["e"] {
 		t.Errorf("expected e=%+v, got=%+v", expected["e"], e)
 	}
