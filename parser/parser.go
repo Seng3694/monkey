@@ -162,7 +162,7 @@ func (parser *Parser) parseLetStatement() *ast.LetStatement {
 
 	stmt.Value = parser.parseExpression(LOWEST)
 
-	for !parser.currentTokenIs(token.SEMICOLON) {
+	if parser.peekTokenIs(token.SEMICOLON) {
 		parser.nextToken()
 	}
 
