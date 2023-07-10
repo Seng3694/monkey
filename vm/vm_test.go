@@ -210,6 +210,16 @@ func TestFirstClassFunctions(t *testing.T) {
 			returnsOneReturner()();`,
 			expected: 1,
 		},
+		{
+			input: `
+			let returnsOneReturner = fn() {
+				let returnsOne = fn() { 1; };
+				returnsOne;
+			};
+			returnsOneReturner()();
+			`,
+			expected: 1,
+		},
 	}
 	runVmTests(t, tests)
 }
