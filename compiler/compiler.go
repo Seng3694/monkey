@@ -48,8 +48,14 @@ func New() *Compiler {
 
 func NewWithState(s *SymbolTable, constants []object.Object) *Compiler {
 	return &Compiler{
-		constants:   constants,
-		scopes:      []CompilationScope{},
+		constants: constants,
+		scopes: []CompilationScope{
+			{
+				instructions:        code.Instructions{},
+				lastInstruction:     EmittedInstruction{},
+				previousInstruction: EmittedInstruction{},
+			},
+		},
 		scopeIndex:  0,
 		symbolTable: s,
 	}
