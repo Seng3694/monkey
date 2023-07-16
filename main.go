@@ -3,11 +3,11 @@ package main
 import (
 	"fmt"
 	"io"
-	"monkey/evaluator"
+	"monkey/compiler"
 	"monkey/lexer"
-	"monkey/object"
 	"monkey/parser"
 	"monkey/repl"
+	"monkey/vm"
 	"os"
 	"os/user"
 )
@@ -39,20 +39,36 @@ func runScript(file string) {
 	program := parser.ParseProgram()
 
 	if len(parser.Errors()) != 0 {
-		printParseErrors(os.Stderr, parser.Errors())
+		printErrors(os.Stderr, "Parser", parser.Errors())
 		return
 	}
 
-	evaluated := evaluator.Eval(program, object.NewEnvironment())
-	if evaluated != nil {
-		io.WriteString(os.Stdout, evaluated.Inspect())
-		io.WriteString(os.Stdout, "\n")
+	comp := compiler.New()
+	err = comp.Compile(program)
+	if err != nil {
+		printError(os.Stderr, "Compiler", err)
+		return
 	}
+
+	machine := vm.New(comp.ByteCode())
+
+	err = machine.Run()
+	if err != nil {
+		printError(os.Stderr, "VM", err)
+		return
+	}
+
+	io.WriteString(os.Stdout, machine.LastPoppedStackElement().Inspect())
+	io.WriteString(os.Stdout, "\n")
 }
 
-func printParseErrors(out io.Writer, errors []string) {
-	io.WriteString(out, "🙈 Parser errors occured:\n")
+func printErrors(out io.Writer, module string, errors []string) {
+	io.WriteString(out, fmt.Sprintf("🙈 %s errors occured:\n", module))
 	for _, msg := range errors {
 		io.WriteString(out, "\t"+msg+"\n")
 	}
+}
+
+func printError(out io.Writer, module string, err error) {
+	io.WriteString(out, fmt.Sprintf("🙈 %s error occured: %s\n", module, err))
 }
